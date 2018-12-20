@@ -1,11 +1,15 @@
 import { useState, useRef, useEffect } from 'react'
 import Head from 'next/head'
+import axios from 'axios'
+
 let WebFont;
 if (process.browser) {
   WebFont = require('webfontloader')
 }
 
 import '../styles/index.scss'
+
+const { GOOGLE_FONT_API_KEY } = process.env
 
 function useInput(initialValue = '', target = 'value') {
   const [value, setValue] = useState(initialValue)
@@ -19,8 +23,8 @@ function useInput(initialValue = '', target = 'value') {
   ]
 }
 
-function saveSvg (svgData, fileName) {
-  var svgBlob = new Blob([svgData], {type:"image/svg+xml;charset=utf-8"});
+function saveSvg(svgData, fileName) {
+  var svgBlob = new Blob([svgData], { type: "image/svg+xml;charset=utf-8" });
   var svgUrl = URL.createObjectURL(svgBlob);
   var downloadLink = document.createElement("a");
   downloadLink.href = svgUrl;
@@ -107,9 +111,8 @@ function Canvas({ text, color, width, height, fontSize, fontFamily, padding, bol
     <svg version="1.1"
       baseProfile="full"
       width="${width}" height="${height}"
-      font-family="${fontFamily}"
       xmlns="http://www.w3.org/2000/svg">
-      <text x="150" y="125" font-size="60" text-anchor="middle" fill="Source Code Pro">SVG</text>
+           <text  font-family="${fontFamily}"  x="150" y="125" font-size="60" text-anchor="middle" fill="Source Code Pro">SVG</text>
 
     </svg>
     `
@@ -138,19 +141,13 @@ function Canvas({ text, color, width, height, fontSize, fontFamily, padding, bol
   )
 }
 
-function App() {
+function App({ fonts }) {
   const [name, setName] = useInput('Picas')
   const [fontSize, setFontSize] = useInput(256)
   const [color, setColor] = useInput('#c62828')
-  const [fontFamilyInput, setFontFamilyInput] = useInput('Fredericka the Great')
   const [fontFamily, setFontFamily] = useInput('Fredericka the Great')
   const [bold, setBold] = useInput(false, 'checked')
   const [italic, setItalic] = useInput(true, 'checked')
-
-
-  const onClickChangeFont = () => {
-    setFontFamily({ target: { value: fontFamilyInput } })
-  }
 
   const big = {
     width: 1024,
@@ -178,13 +175,28 @@ function App() {
           />
         </div>
         <div className="is-size-4" style={{ textAlign: 'center', padding: '2rem' }}>
-        <span>Generate Project Logo with Google Fonts</span>
-      </div>
+          <span>Generate Project Logo with Google Fonts</span>
+        </div>
 
         <div>
           <div className="field">
             <label className="label">Product name</label>
             <input className="input" defaultValue={name} onChange={setName} />
+          </div>
+          <div className="field">
+            <label className="label">Font family</label>
+            <div className="select">
+              <select onChange={setFontFamily} defaultValue={fontFamily}>
+                {fonts.map(font => {
+                  return (
+                    <option key={font} value={font}>
+                      {font}
+                    </option>
+                  )
+                })}
+              </select>
+            </div>
+            <div style={{ paddingTop: '.5rem', paddingLeft: '1rem', display: 'inline-block' }}>✍️ Explore font on <a href="https://fonts.google.com/"> Google Font </a></div>
           </div>
           <div className="field">
             <label className="label">Font size</label>
@@ -193,18 +205,6 @@ function App() {
           <div className="field">
             <label className="label">Font color</label>
             <input className="input" defaultValue={color} onChange={setColor} type='color' />
-          </div>
-          <div className="field">
-            <label className="label">Font family</label>
-            <div className="field has-addons">
-              <div className="control">
-                <input className="input" defaultValue={fontFamilyInput} onChange={setFontFamilyInput} />
-              </div>
-              <div className="control">
-                <a className="button" onClick={onClickChangeFont}>Change</a>
-              </div>
-            </div>
-            <div>✍️ Find font on <a href="https://fonts.google.com/"> Google Font </a></div>
           </div>
           <div className="field">
             <label className="checkbox" style={{ marginRight: '1rem' }}>
@@ -222,6 +222,47 @@ function App() {
       </div>
     </React.Fragment>
   )
+}
+
+const USE_CACHE = true
+
+const cache = {
+  updateAt: null,
+  data: []
+}
+
+App.getInitialProps = async function () {
+  if (USE_CACHE && !cache.updateAt || Date.now() - cache.updateAt > 3600000) {
+    try {
+      const res = await axios.get('https://www.googleapis.com/webfonts/v1/webfonts', {
+        params: {
+          key: GOOGLE_FONT_API_KEY,
+          sort: 'popularity'
+        }
+      })
+      cache.updateAt = Date.now()
+      cache.data = res.data.items.map(d => d.family)
+
+      return {
+        error: true,
+        useCache: false,
+        fonts: cache.data
+      }
+    } catch (e) {
+      console.log(e.message)
+      return {
+        error: true,
+        useCache: false,
+        data: []
+      }
+    }
+  } else {
+    return {
+      error: false,
+      useCache: true,
+      fonts: cache.data
+    }
+  }
 }
 
 export default App
