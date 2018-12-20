@@ -1,5 +1,8 @@
 import { useState, useRef, useEffect } from 'react'
-
+let WebFont;
+if (process.browser) {
+  WebFont = require('webfontloader')
+}
 function useInput(initialValue = '') {
   const [ value, setValue ] = useState(initialValue)
 
@@ -15,11 +18,33 @@ function Canvas ({ text, color, width, height, fontSize, fontFamily }) {
   const canvas = useRef(null)
   const ctx = useRef(null)
 
+  const [ loadingFont, setLoadingFont ] = useState(false)
+
   useEffect(() => {
     ctx.current = canvas.current.getContext('2d')
   }, [])
 
   useEffect(() => {
+    WebFont.load({
+      loading() {
+        setLoadingFont(true)
+      },
+      active() {
+        drawText()
+        setLoadingFont(false)
+      },
+      inactive() {
+        setLoadingFont(false)
+      },
+      google: {
+        families: [fontFamily]
+      },
+    })
+  }, [fontFamily])
+
+  useEffect(drawText, [text, color, fontSize, fontFamily, width, height])
+
+  function drawText() {
     const measure =  ctx.current.measureText(text)
 
     ctx.current.font = `${fontSize}px ${fontFamily}`;
@@ -30,10 +55,13 @@ function Canvas ({ text, color, width, height, fontSize, fontFamily }) {
     // draw text
     ctx.current.fillStyle = color
     ctx.current.fillText(text, 0, fontSize)
-  }, [text, color, fontSize, fontFamily, width, height])
+  }
 
   return (
-    <canvas width={width} height={height} ref={canvas}></canvas>
+    <div>
+      { loadingFont && 'Loading...' }
+      <canvas width={width} height={height} ref={canvas}></canvas>
+    </div>
   )
 }
 
@@ -50,14 +78,13 @@ function App() {
           width={512}
           height={380}
           color={color}
-          fontFamily={'Source Code Pro'}
+          fontFamily={'Pacifico'}
           fontSize={fontSize}
         />
       </div>
       <input defaultValue={name} onChange={setName} />
       <input defaultValue={fontSize} onChange={setFontSize} />
       <input defaultValue={color} onChange={setColor} type='color'/>
-      <span>{name}</span>
     </div>
   )
 }
