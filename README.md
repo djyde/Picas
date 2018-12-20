@@ -4,6 +4,11 @@ Generate Project Logo with Google Fonts
 
 https://picas.now.sh
 
+## Features
+
+- Automatically load Google Web Fonts
+- Retina friendly
+
 ## Projects using Picas
 
 - [Serlina](https://github.com/djyde/serlina)
