@@ -1,6 +1,11 @@
 {
+  "name": "picas",
+  "version": "0.1.0",
   "scripts": {
-    "dev": "next"
+    "dev": "next",
+    "build": "next build",
+    "start": "next start",
+    "export": "npm run build && next export dist"
   },
   "dependencies": {
     "@zeit/next-sass": "^1.0.1",
