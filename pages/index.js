@@ -19,6 +19,15 @@ function useInput(initialValue = '', target = 'value') {
   ]
 }
 
+function saveSvg (svgData, fileName) {
+  var svgBlob = new Blob([svgData], {type:"image/svg+xml;charset=utf-8"});
+  var svgUrl = URL.createObjectURL(svgBlob);
+  var downloadLink = document.createElement("a");
+  downloadLink.href = svgUrl;
+  downloadLink.download = `${fileName}.svg`;
+  downloadLink.click();
+}
+
 function Canvas({ text, color, width, height, fontSize, fontFamily, padding, bold, italic }) {
 
   const canvas = useRef(null)
@@ -92,10 +101,38 @@ function Canvas({ text, color, width, height, fontSize, fontFamily, padding, bol
     ctx.current.fillText(text, width, height)
   }
 
+  // TODO: export svg
+  function exportSVG() {
+    const svg = `
+    <svg version="1.1"
+      baseProfile="full"
+      width="${width}" height="${height}"
+      font-family="${fontFamily}"
+      xmlns="http://www.w3.org/2000/svg">
+      <text x="150" y="125" font-size="60" text-anchor="middle" fill="Source Code Pro">SVG</text>
+
+    </svg>
+    `
+    saveSvg(svg, text)
+  }
+
+  function exportPNG() {
+    const png = canvas.current.toDataURL('image/png')
+    var link = document.createElement('a');
+    link.download = `${text}.png`;
+    link.href = png
+    link.click()
+  }
+
   return (
     <div>
       <div className='card' style={{ width, height }}>
         <canvas style={{ visibility: loadingFont ? 'hidden' : 'visible' }} width={width} height={height} ref={canvas}></canvas>
+      </div>
+      <div style={{ textAlign: 'center' }}>
+
+        <a className="button is-primary" onClick={exportPNG}>Download PNG</a>
+        {/* <a className="button" onClick={exportSVG}>Download SVG</a> */}
       </div>
     </div>
   )
