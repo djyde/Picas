@@ -3,7 +3,10 @@
     "dev": "next"
   },
   "dependencies": {
+    "@zeit/next-sass": "^1.0.1",
+    "bulma": "^0.7.2",
     "next": "^7.0.2",
+    "node-sass": "^4.11.0",
     "react": "16.7.0-alpha.2",
     "react-dom": "16.7.0-alpha.2",
     "webfontloader": "^1.6.28"
