@@ -68,7 +68,14 @@ function Canvas ({ text, color, width, height, fontSize, fontFamily }) {
 function App() {
   const [ name, setName ] = useInput('hello')
   const [ fontSize, setFontSize ] = useInput(128)
-  const [ color, setColor ] = useInput('#dddddd')
+  const [ color, setColor ] = useInput('#271259')
+  const [ fontFamilyInput, setFontFamilyInput ]  = useInput('Pacifico')
+  const [ fontFamily, setFontFamily ]  = useInput('Pacifico')
+
+  const onClickChangeFont = () => {
+    setFontFamily({ target: { value: fontFamilyInput } })
+  }
+
   return (
     <div>
       
@@ -78,13 +85,15 @@ function App() {
           width={512}
           height={380}
           color={color}
-          fontFamily={'Pacifico'}
+          fontFamily={fontFamily}
           fontSize={fontSize}
         />
       </div>
       <input defaultValue={name} onChange={setName} />
       <input defaultValue={fontSize} onChange={setFontSize} />
       <input defaultValue={color} onChange={setColor} type='color'/>
+      <input defaultValue={fontFamilyInput} onChange={setFontFamilyInput} />
+      <button onClick={onClickChangeFont}>Change</button>
     </div>
   )
 }
