@@ -2,7 +2,7 @@
 
 Generate Project Logo with Google Fonts
 
-https://djyde.github.io/Picas/
+https://picas.now.sh
 
 ## Projects using Picas
 
