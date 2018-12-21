@@ -1,6 +1,8 @@
 import { useState, useRef, useEffect } from 'react'
 import Head from 'next/head'
 import axios from 'axios'
+import Router from 'next/router'
+import withGA from 'next-ga'
 
 let WebFont;
 if (process.browser) {
@@ -278,14 +280,12 @@ App.getInitialProps = async function () {
       })
       cache.updateAt = Date.now()
       cache.data = res.data.items.map(d => d.family)
-
       return {
         error: true,
         useCache: false,
         fonts: cache.data
       }
     } catch (e) {
-      console.log(e.message)
       return {
         error: true,
         useCache: false,
@@ -301,4 +301,4 @@ App.getInitialProps = async function () {
   }
 }
 
-export default App
+export default withGA('UA-57278918-5', Router)(App)

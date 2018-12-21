@@ -12,6 +12,7 @@
     "axios": "^0.18.0",
     "bulma": "^0.7.2",
     "next": "^7.0.2",
+    "next-ga": "^2.3.4",
     "node-sass": "^4.11.0",
     "react": "16.7.0-alpha.2",
     "react-dom": "16.7.0-alpha.2",
