@@ -11,6 +11,10 @@ import '../styles/index.scss'
 
 const { GOOGLE_FONT_API_KEY } = process.env
 
+function getRandomInt(max) {
+  return Math.floor(Math.random() * Math.floor(max));
+}
+
 function useInput(initialValue = '', target = 'value') {
   const [value, setValue] = useState(initialValue)
 
@@ -149,6 +153,11 @@ function App({ fonts }) {
   const [bold, setBold] = useInput(false, 'checked')
   const [italic, setItalic] = useInput(true, 'checked')
 
+  function random() {
+    const randomFont = fonts[getRandomInt(fonts.length - 1)]
+    setFontFamily({ target: { value: randomFont } })
+  }
+
   const big = {
     width: 1024,
     height: 1024 * 0.618 / 2
@@ -174,19 +183,14 @@ function App({ fonts }) {
             italic={italic}
           />
         </div>
-        <div className="is-size-4" style={{ textAlign: 'center', padding: '2rem' }}>
-          <span>Generate Project Logo with Google Fonts</span>
-        </div>
 
-        <div>
-          <div className="field">
-            <label className="label">Product name</label>
+        <div className="field has-addons has-addons-centered" style={{ marginTop: '2rem' }}>
+          <p className="control">
             <input className="input" defaultValue={name} onChange={setName} />
-          </div>
-          <div className="field">
-            <label className="label">Font family</label>
-            <div className="select">
-              <select onChange={setFontFamily} defaultValue={fontFamily}>
+          </p>
+          <p className="control">
+            <span className="select">
+              <select onChange={setFontFamily} value={fontFamily}>
                 {fonts.map(font => {
                   return (
                     <option key={font} value={font}>
@@ -195,18 +199,30 @@ function App({ fonts }) {
                   )
                 })}
               </select>
-            </div>
-            <div style={{ paddingTop: '.5rem', paddingLeft: '1rem', display: 'inline-block' }}>✍️ Explore font on <a href="https://fonts.google.com/"> Google Font </a></div>
-          </div>
-          <div className="field">
+            </span>
+          </p>
+          <p className="control">
+            <a className="button is-primary" onClick={random}>
+              I am feeling lucky!
+            </a>
+          </p>
+        </div>
+
+        <div style={{ textAlign: 'center', marginBottom: '4rem' }}>✍️ Explore font on <a href="https://fonts.google.com/"> Google Font </a></div>
+
+        <hr />
+
+        <div className="columns" style={{ marginTop: '2rem' }}>
+          <div className="field column">
             <label className="label">Font size</label>
             <input className="input" defaultValue={fontSize} onChange={setFontSize} type='number' />
           </div>
-          <div className="field">
+          <div className="field column">
             <label className="label">Font color</label>
             <input className="input" defaultValue={color} onChange={setColor} type='color' />
           </div>
-          <div className="field">
+          <div className="field column">
+            <label className="label">Style</label>
             <label className="checkbox" style={{ marginRight: '1rem' }}>
               <input defaultChecked={bold} onChange={setBold} type='checkbox' />bold
             </label>
