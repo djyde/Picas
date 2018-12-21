@@ -27,6 +27,33 @@ function useInput(initialValue = '', target = 'value') {
   ]
 }
 
+function draggable (el, handler) {
+  let dragging = false
+
+  const buffer = {
+    x: 0,
+    y: 0
+  }
+
+  el.onmousemove = function({ movementX, movementY }) {
+    if (dragging) {
+      buffer.x += movementX
+      buffer.y += movementY
+      handler({ movementX: buffer.x, movementY: buffer.y })
+    }
+  }
+
+  el.onmouseup = function() {
+    dragging = false
+    // buffer.x = 0
+    // buffer.y = 0
+  }
+
+  el.onmousedown = function({ clientX, clientY }) {
+    dragging = true
+  }
+}
+
 function saveSvg(svgData, fileName) {
   var svgBlob = new Blob([svgData], { type: "image/svg+xml;charset=utf-8" });
   var svgUrl = URL.createObjectURL(svgBlob);
@@ -41,6 +68,8 @@ function Canvas({ text, color, width, height, fontSize, fontFamily, padding, bol
   const canvas = useRef(null)
   const ctx = useRef(null)
 
+  const [ offset, setOffset ] = useState({ x: 0, y: 0 })
+
   const [loadingFont, setLoadingFont] = useState(false)
 
   useEffect(() => {
@@ -52,17 +81,8 @@ function Canvas({ text, color, width, height, fontSize, fontFamily, padding, bol
     canvas.current.style.width = `${width}px`
     canvas.current.style.height = `${height}px`
 
-    WebFont.load({
-      loading() {
-        setLoadingFont(true)
-      },
-      active() {
-        drawText()
-        setLoadingFont(false)
-      },
-      inactive() {
-        setLoadingFont(false)
-      }
+    draggable(canvas.current, ({ movementX, movementY }) => {
+      setOffset({ x: movementX, y: movementY })
     })
   }, [])
 
@@ -84,7 +104,7 @@ function Canvas({ text, color, width, height, fontSize, fontFamily, padding, bol
     })
   }, [fontFamily])
 
-  useEffect(drawText, [text, color, fontFamily, width, height, padding, fontSize, bold, italic])
+  useEffect(drawText, [text, color, fontFamily, width, height, padding, fontSize, bold, italic, offset])
 
   function drawText() {
     const measure = ctx.current.measureText(text)
@@ -106,7 +126,7 @@ function Canvas({ text, color, width, height, fontSize, fontFamily, padding, bol
 
     // draw text
     ctx.current.fillStyle = color
-    ctx.current.fillText(text, width, height)
+    ctx.current.fillText(text, width + offset.x, height + offset.y)
   }
 
   // TODO: export svg
