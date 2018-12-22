@@ -14,6 +14,8 @@ https://picas.now.sh
 - [Serlina](https://github.com/djyde/serlina)
 - [Rehux](https://github.com/djyde/rehux)
 
+> [I am using Picas!](https://github.com/djyde/Picas/issues/7)
+
 # License
 
 MIT License
