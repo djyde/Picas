@@ -3,7 +3,7 @@ import Head from 'next/head'
 import axios from 'axios'
 import Router from 'next/router'
 import withGA from 'next-ga'
-
+import groupBy from 'lodash.groupby'
 let WebFont;
 if (process.browser) {
   WebFont = require('webfontloader')
@@ -29,7 +29,7 @@ function useInput(initialValue = '', target = 'value') {
   ]
 }
 
-function draggable (el, handler) {
+function draggable(el, handler) {
   let dragging = false
 
   const buffer = {
@@ -37,7 +37,7 @@ function draggable (el, handler) {
     y: 0
   }
 
-  el.onmousemove = function({ movementX, movementY }) {
+  el.onmousemove = function ({ movementX, movementY }) {
     if (dragging) {
       buffer.x += movementX
       buffer.y += movementY
@@ -45,13 +45,13 @@ function draggable (el, handler) {
     }
   }
 
-  el.onmouseup = function() {
+  el.onmouseup = function () {
     dragging = false
     // buffer.x = 0
     // buffer.y = 0
   }
 
-  el.onmousedown = function({ clientX, clientY }) {
+  el.onmousedown = function ({ clientX, clientY }) {
     dragging = true
   }
 }
@@ -70,7 +70,7 @@ function Canvas({ text, color, width, height, fontSize, fontFamily, padding, bol
   const canvas = useRef(null)
   const ctx = useRef(null)
 
-  const [ offset, setOffset ] = useState({ x: 0, y: 0 })
+  const [offset, setOffset] = useState({ x: 0, y: 0 })
 
   const [loadingFont, setLoadingFont] = useState(false)
 
@@ -185,6 +185,8 @@ function App({ fonts }) {
     height: 1024 * 0.618 / 2
   }
 
+  const fontsByCategory = groupBy(fonts, 'category')
+
   return (
     <React.Fragment>
       <Head>
@@ -213,11 +215,17 @@ function App({ fonts }) {
           <p className="control">
             <span className="select">
               <select onChange={setFontFamily} value={fontFamily}>
-                {fonts.map(font => {
+                {Object.keys(fontsByCategory).map(category => {
                   return (
-                    <option key={font} value={font}>
-                      {font}
-                    </option>
+                    <optgroup label={category}>
+                      {fontsByCategory[category].map(font => {
+                        return (
+                          <option key={font.name} value={font.name}>
+                            {font.name}
+                          </option>
+                        )
+                      })}
+                    </optgroup>
                   )
                 })}
               </select>
@@ -276,10 +284,10 @@ App.getInitialProps = async function () {
         params: {
           key: GOOGLE_FONT_API_KEY,
           sort: 'popularity'
-        }
+        },
       })
       cache.updateAt = Date.now()
-      cache.data = res.data.items.map(d => d.family)
+      cache.data = res.data.items.map(d => ({ name: d.family, category: d.category }))
       return {
         error: true,
         useCache: false,

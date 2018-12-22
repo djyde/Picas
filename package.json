@@ -11,6 +11,7 @@
     "@zeit/next-sass": "^1.0.1",
     "axios": "^0.18.0",
     "bulma": "^0.7.2",
+    "lodash.groupby": "^4.6.0",
     "next": "^7.0.2",
     "next-ga": "^2.3.4",
     "node-sass": "^4.11.0",
