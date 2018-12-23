@@ -177,7 +177,7 @@ function App({ fonts }) {
 
   function random() {
     const randomFont = fonts[getRandomInt(fonts.length - 1)]
-    setFontFamily({ target: { value: randomFont } })
+    setFontFamily({ target: { value: randomFont.name } })
   }
 
   const big = {
@@ -217,7 +217,7 @@ function App({ fonts }) {
               <select onChange={setFontFamily} value={fontFamily}>
                 {Object.keys(fontsByCategory).map(category => {
                   return (
-                    <optgroup label={category}>
+                    <optgroup key={category} label={category}>
                       {fontsByCategory[category].map(font => {
                         return (
                           <option key={font.name} value={font.name}>
