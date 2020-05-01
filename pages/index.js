@@ -148,7 +148,7 @@ function Canvas({ text, color, width, height, fontSize, fontFamily, padding, bol
   function exportPNG() {
     const png = canvas.current.toDataURL('image/png')
     var link = document.createElement('a');
-    link.download = `${text}.png`;
+    link.download = `${text}-${fontFamily}.png`;
     link.href = png
     link.click()
   }
